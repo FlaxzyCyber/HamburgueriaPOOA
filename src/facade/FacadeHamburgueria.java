@@ -11,6 +11,7 @@ import fabrica.FabricaDeLanche;
 import fabrica.FabricaDeSobremesa;
 import modelo.ItemCardapio;
 import modelo.Pedido;
+import modelo.StatusPedido;
 import observador.NotificacaoCliente;
 import observador.NotificacaoCozinha;
 import pagamento.Pagamento;
@@ -20,16 +21,8 @@ import java.util.List;
 
 public class FacadeHamburgueria {
 
-    private static final String NOME_LANCHE = "X-Burger";
-    private static final double PESO_LANCHE = 300.0;
-    private static final double PRECO_LANCHE = 25.0;
-    private static final String NOME_BEBIDA = "Refrigerante";
-    private static final double PESO_BEBIDA = 350.0;
-    private static final double PRECO_BEBIDA = 7.0;
-    private static final String NOME_SOBREMESA = "Sorvete";
-    private static final double PESO_SOBREMESA = 200.0;
-    private static final double PRECO_SOBREMESA = 12.0;
-    private static final double ADICIONAL_HAMBURGUER = 8.0;
+    // MUDANÇA: Removidas as constantes fixas de nome, peso e preço dos itens.
+    // Agora cada Fábrica conhece as regras de criação e precificação do seu produto.
     private static final double VALOR_ENTREGA = 5.0;
 
     private final FabricaDeLanche fabricaLanche = new FabricaDeLanche();
@@ -41,12 +34,11 @@ public class FacadeHamburgueria {
     private Pedido pedido;
     private boolean pago;
 
-    public void adicionarLanche(BuilderLanche opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
+    // MUDANÇA: Recebe o nome do lanche escolhido no menu e repassa para a FabricaDeLanche.
+    public void adicionarLanche(String nomeLanche, BuilderLanche opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
         exigirQuantidade(quantidade);
 
-        double preco = PRECO_LANCHE + (opcoes.getQuantidade_hamburgueres() - 1) * ADICIONAL_HAMBURGUER;
-
-        ItemCardapio lanche = fabricaLanche.criarItem(NOME_LANCHE, PESO_LANCHE, preco, opcoes);
+        ItemCardapio lanche = fabricaLanche.criarItem(nomeLanche, opcoes);
         lanche.setQuantidade(quantidade);
         if (comQueijo) {
             lanche = new ExtraQueijo(lanche);
@@ -57,16 +49,18 @@ public class FacadeHamburgueria {
         itensEmMontagem.add(lanche);
     }
 
-    public void adicionarBebida(BuilderBebida opcoes, int quantidade) {
+    // MUDANÇA: Recebe o nome da bebida escolhida no menu e repassa para a FabricaDeBebida.
+    public void adicionarBebida(String nomeBebida, BuilderBebida opcoes, int quantidade) {
         exigirQuantidade(quantidade);
-        ItemCardapio bebida = fabricaBebida.criarItem(NOME_BEBIDA, PESO_BEBIDA, PRECO_BEBIDA, opcoes);
+        ItemCardapio bebida = fabricaBebida.criarItem(nomeBebida, opcoes);
         bebida.setQuantidade(quantidade);
         itensEmMontagem.add(bebida);
     }
 
-    public void adicionarSobremesa(BuilderSobremesa opcoes, int quantidade) {
+    // MUDANÇA: Recebe o nome da sobremesa escolhida no menu e repassa para a FabricaDeSobremesa.
+    public void adicionarSobremesa(String nomeSobremesa, BuilderSobremesa opcoes, int quantidade) {
         exigirQuantidade(quantidade);
-        ItemCardapio sobremesa = fabricaSobremesa.criarItem(NOME_SOBREMESA, PESO_SOBREMESA, PRECO_SOBREMESA, opcoes);
+        ItemCardapio sobremesa = fabricaSobremesa.criarItem(nomeSobremesa, opcoes);
         sobremesa.setQuantidade(quantidade);
         itensEmMontagem.add(sobremesa);
     }
@@ -83,10 +77,16 @@ public class FacadeHamburgueria {
         pedido = builder.build();
         pedido.adicionarObservador(new NotificacaoCozinha());
         pedido.adicionarObservador(new NotificacaoCliente());
+        pedido.setStatus(StatusPedido.RECEBIDO);
 
         itensDoPedido = new ArrayList<>(itensEmMontagem);
         itensEmMontagem.clear();
         pago = false;
+    }
+
+    public double getValorTotalPedido() {
+        exigirPedido();
+        return pedido.valorTotalPedido();
     }
 
     public void pagar(Pagamento pagamento) {
@@ -96,16 +96,45 @@ public class FacadeHamburgueria {
         }
         pagamento.realizarPagamento(pedido.valorTotalPedido());
         pago = true;
+        processarPedido();
     }
 
-    public void avancarStatus() {
-        exigirPedido();
-        pedido.avancarStatus();
+    private void processarPedido() {
+        while (pedido.getStatus() != StatusPedido.ENTREGUE) {
+            aguardar(1000);
+            pedido.avancarStatus();
+        }
+    }
+
+    private void aguardar(int milissegundos) {
+        try {
+            Thread.sleep(milissegundos);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void resumo() {
-        exigirPedido();
-        System.out.println("== Resumo do pedido ==");
+        if (!itensEmMontagem.isEmpty()) {
+            System.out.println("\n== Resumo do pedido (EM MONTAGEM) ==");
+            double subtotal = 0;
+            for (ItemCardapio item : itensEmMontagem) {
+                double valorItem = item.getPrecoItem() * item.getQuantidade();
+                subtotal += valorItem;
+                System.out.println(item.getDescricao() + " x" + item.getQuantidade()
+                        + " = R$ " + valorItem);
+            }
+            System.out.println("VALOR DA ENTREGA R$: " + VALOR_ENTREGA);
+            System.out.println("VALOR TOTAL ESTIMADO R$: " + (subtotal + VALOR_ENTREGA));
+            System.out.println("STATUS: EM MONTAGEM (finalize na opção 4)");
+            return;
+        }
+
+        if (pedido == null) {
+            throw new IllegalStateException("Nenhum item foi adicionado ao pedido ainda.");
+        }
+
+        System.out.println("\n== Resumo do pedido ==");
         for (ItemCardapio item : itensDoPedido) {
             System.out.println(item.getDescricao() + " x" + item.getQuantidade()
                     + " = R$ " + item.getPrecoItem() * item.getQuantidade());

@@ -3,15 +3,11 @@ package fabrica;
 import modelo.ItemCardapio;
 
 public abstract class FabricaItemCardapio<T> {
-    protected abstract ItemCardapio instanciarItem(String
-                                                           nomeItemCardapio, double pesoItem, double precoItem, T builder);
+    // MUDANÇA: A fábrica agora recebe apenas o nome do produto escolhido e o seu Builder,
+    // ficando responsável por definir o peso e o preço base de cada categoria.
+    protected abstract ItemCardapio instanciarItem(String nomeItemCardapio, T builder);
 
-    public ItemCardapio criarItem(String nomeItemCardapio, double pesoItem,
-                                  double precoItem, T builder) {
-
-        ItemCardapio novoItemCardapio = instanciarItem(nomeItemCardapio,pesoItem,precoItem, builder);
-
-        return novoItemCardapio;
-
+    public ItemCardapio criarItem(String nomeItemCardapio, T builder) {
+        return instanciarItem(nomeItemCardapio, builder);
     }
 }
