@@ -36,6 +36,7 @@ public class FacadeHamburgueria {
 
     // MUDANÇA: Recebe o nome do lanche escolhido no menu e repassa para a FabricaDeLanche.
     public void adicionarLanche(String nomeLanche, BuilderLanche opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
+        exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
 
         ItemCardapio lanche = fabricaLanche.criarItem(nomeLanche, opcoes);
@@ -51,6 +52,7 @@ public class FacadeHamburgueria {
 
     // MUDANÇA: Recebe o nome da bebida escolhida no menu e repassa para a FabricaDeBebida.
     public void adicionarBebida(String nomeBebida, BuilderBebida opcoes, int quantidade) {
+        exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
         ItemCardapio bebida = fabricaBebida.criarItem(nomeBebida, opcoes);
         bebida.setQuantidade(quantidade);
@@ -59,6 +61,7 @@ public class FacadeHamburgueria {
 
     // MUDANÇA: Recebe o nome da sobremesa escolhida no menu e repassa para a FabricaDeSobremesa.
     public void adicionarSobremesa(String nomeSobremesa, BuilderSobremesa opcoes, int quantidade) {
+        exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
         ItemCardapio sobremesa = fabricaSobremesa.criarItem(nomeSobremesa, opcoes);
         sobremesa.setQuantidade(quantidade);
@@ -66,6 +69,7 @@ public class FacadeHamburgueria {
     }
 
     public void fazerPedido(String endereco, String observacoes) {
+        exigirPedidoAnteriorPago();
         BuilderPedido builder = new BuilderPedido()
                 .adicionarEndereco(endereco)
                 .adicionarObservacoes(observacoes)
@@ -153,6 +157,12 @@ public class FacadeHamburgueria {
     private void exigirPedido() {
         if (pedido == null) {
             throw new IllegalStateException("Nenhum pedido foi finalizado ainda.");
+        }
+    }
+    // Adicione este método privado na FacadeHamburgueria:
+    public void exigirPedidoAnteriorPago() {
+        if (pedido != null && !pago) {
+            throw new IllegalStateException("Pague o pedido atual antes de iniciar outro.");
         }
     }
 }
