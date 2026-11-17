@@ -39,10 +39,22 @@ public class Main {
 
     private static void executar(int opcao) {
         switch (opcao) {
-            case 1 -> montarLanche();
-            case 2 -> montarBebida();
-            case 3 -> montarSobremesa();
-            case 4 -> finalizarPedido();
+            case 1 ->  {
+                facade.exigirPedidoAnteriorPago();
+                montarLanche();
+            }
+            case 2 -> {
+                facade.exigirPedidoAnteriorPago();
+                montarBebida();
+            }
+            case 3 -> {
+                facade.exigirPedidoAnteriorPago();
+                montarSobremesa();
+            }
+            case 4 -> {
+                facade.exigirPedidoAnteriorPago();
+                finalizarPedido();
+            }
             case 5 -> facade.pagar(escolherPagamento());
             case 6 -> facade.resumo();
             case 0 -> System.out.println("Até logo!");
