@@ -1,12 +1,22 @@
 package pagamento;
 
 public class PagamentoDinheiro implements Pagamento {
+    private final double valorEntregue;
+
+    public PagamentoDinheiro(double valorEntregue) {
+        this.valorEntregue = valorEntregue;
+    }
 
     @Override
     public void realizarPagamento(double valorPago) {
-        System.out.println("Pagamento realizado! ");
+        if (valorEntregue < valorPago) {
+            throw new IllegalArgumentException("Dinheiro insuficiente. Faltam R$ " + (valorPago - valorEntregue));
+        }
 
-        // if ( troco == true) {
-        // "sout("valor do troco foi de R$ xxx,xx");
+        double troco = valorEntregue - valorPago;
+        System.out.println("Pagamento em dinheiro realizado, total: R$ " + valorPago);
+        if (troco > 0) {
+            System.out.println("Troco: R$ " + troco);
+        }
     }
 }
