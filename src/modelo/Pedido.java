@@ -47,17 +47,6 @@ public class Pedido {
         return total;
     }
 
-    @Override
-    public String toString() {
-        return "== Informações de Pedido =={" +
-                "endereco do cliente ='" + endereco + '\'' +
-                ", itens presentes =" + itens +
-                ", detalhes ='" + observacoes + '\'' +
-                ", valor de entrega =" + valorEntrega +
-                ", valor total =" + //valorTotalPedido +
-                ", "+ '}';
-    }
-
     public void avancarStatus() {
         StatusPedido[] todos = StatusPedido.values();
         int proximo = status.ordinal() + 1;
