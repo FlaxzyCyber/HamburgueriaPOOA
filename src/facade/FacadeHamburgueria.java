@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FacadeHamburgueria {
-    // cardápio fixo (RNF08: dados fixos no código)
+
     private static final String NOME_LANCHE = "X-Burger";
     private static final double PESO_LANCHE = 300.0;
     private static final double PRECO_LANCHE = 25.0;
@@ -44,11 +44,10 @@ public class FacadeHamburgueria {
     public void adicionarLanche(BuilderLanche opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
         exigirQuantidade(quantidade);
 
-        // cada hambúrguer a mais no lanche aumenta o preço
         double preco = PRECO_LANCHE + (opcoes.getQuantidade_hamburgueres() - 1) * ADICIONAL_HAMBURGUER;
 
         ItemCardapio lanche = fabricaLanche.criarItem(NOME_LANCHE, PESO_LANCHE, preco, opcoes);
-        lanche.setQuantidade(quantidade); // define antes de colocar os extras
+        lanche.setQuantidade(quantidade);
         if (comQueijo) {
             lanche = new ExtraQueijo(lanche);
         }
@@ -81,7 +80,7 @@ public class FacadeHamburgueria {
             builder.adicionarItem(item);
         }
 
-        pedido = builder.build(); // lança erro se o pedido estiver sem itens
+        pedido = builder.build();
         pedido.adicionarObservador(new NotificacaoCozinha());
         pedido.adicionarObservador(new NotificacaoCliente());
 
@@ -96,7 +95,7 @@ public class FacadeHamburgueria {
             throw new IllegalStateException("Este pedido já foi pago.");
         }
         pagamento.realizarPagamento(pedido.valorTotalPedido());
-        pago = true; // só chega aqui se o pagamento deu certo
+        pago = true;
     }
 
     public void avancarStatus() {
@@ -104,17 +103,16 @@ public class FacadeHamburgueria {
         pedido.avancarStatus();
     }
 
-    public String resumo() {
+    public void resumo() {
         exigirPedido();
-        StringBuilder texto = new StringBuilder("== Resumo do pedido ==\n");
+        System.out.println("== Resumo do pedido ==");
         for (ItemCardapio item : itensDoPedido) {
-            texto.append(String.format("%s x%d = R$ %.2f%n",
-                    item.getDescricao(), item.getQuantidade(), item.getPrecoItem() * item.getQuantidade()));
+            System.out.println(item.getDescricao() + " x" + item.getQuantidade()
+                    + " = R$ " + item.getPrecoItem() * item.getQuantidade());
         }
-        texto.append(String.format("Entrega: R$ %.2f%n", VALOR_ENTREGA));
-        texto.append(String.format("Total: R$ %.2f%n", pedido.valorTotalPedido()));
-        texto.append("Status: ").append(pedido.getStatus());
-        return texto.toString();
+        System.out.println("VALOR DA ENTREGA R$: " + VALOR_ENTREGA);
+        System.out.println("VALOR TOTAL R$: " + pedido.valorTotalPedido());
+        System.out.println("STATUS: " + pedido.getStatus());
     }
 
     private void exigirQuantidade(int quantidade) {
