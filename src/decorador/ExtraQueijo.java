@@ -2,7 +2,7 @@ package decorador;
 import modelo.ItemCardapio;
 
 public class ExtraQueijo extends ExtraDecorator {
-
+   final double precoQueijo = 4.00;
    public ExtraQueijo(ItemCardapio item) {
       super(item);
    }
@@ -14,6 +14,6 @@ public class ExtraQueijo extends ExtraDecorator {
 
    @Override
     public double getPrecoItem() {
-      return itemDecorado.getPrecoItem() + 4.00;
+      return itemDecorado.getPrecoItem() + precoQueijo;
     }
 }

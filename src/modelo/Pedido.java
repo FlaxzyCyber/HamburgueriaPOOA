@@ -58,4 +58,12 @@ public class Pedido {
                 ", "+ '}';
     }
 
+    public void avancarStatus() {
+        StatusPedido[] todos = StatusPedido.values();
+        int proximo = status.ordinal() + 1;
+        if (proximo >= todos.length) {
+            throw new IllegalStateException("O pedido já foi entregue.");
+        }
+        setStatus(todos[proximo]);
+    }
 }
