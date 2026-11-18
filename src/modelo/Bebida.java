@@ -1,14 +1,14 @@
 package modelo;
 
-public class Bebida extends ItemCardapio{
-    // MilkShake, água, refri, chá mate leão etc - por isso o sabor / marca
+public class Bebida extends ItemCardapio {
     double volumeMl;
     String marca;
     String sabor;
     boolean quererCopo = true;
     boolean quererCanudo = true;
 
-    public Bebida(String nomeItemCardapio, double pesoItem, double precoItem, double volumeMl, String marca, String sabor, boolean quererCopo, boolean quererCanudo) {
+    public Bebida(String nomeItemCardapio, double pesoItem, double precoItem, double volumeMl,
+                  String marca, String sabor, boolean quererCopo, boolean quererCanudo) {
         this.nomeItemCardapio = nomeItemCardapio;
         this.pesoItem = pesoItem;
         this.precoItem = precoItem;
@@ -17,5 +17,11 @@ public class Bebida extends ItemCardapio{
         this.sabor = sabor;
         this.quererCopo = quererCopo;
         this.quererCanudo = quererCanudo;
+    }
+
+    // MUDANÇA: Exibe o tipo de bebida, marca, sabor e volume no resumo.
+    @Override
+    public String getNomeItemCardapio() {
+        return super.getNomeItemCardapio() + " " + marca + " " + sabor + " (" + (int) volumeMl + "ml)";
     }
 }

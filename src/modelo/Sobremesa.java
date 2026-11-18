@@ -1,13 +1,13 @@
 package modelo;
 
-public class Sobremesa extends ItemCardapio{
-    // sorvete, pizza doce, açaí
+public class Sobremesa extends ItemCardapio {
     String sabor;
     String saborCalda;
     boolean temJujuba = true;
     boolean temNutella = true;
 
-    public Sobremesa(String nomeItemCardapio, double pesoItem, double precoItem, String sabor, String saborCalda, boolean temJujuba, boolean temNutella) {
+    public Sobremesa(String nomeItemCardapio, double pesoItem, double precoItem, String sabor,
+                     String saborCalda, boolean temJujuba, boolean temNutella) {
         this.nomeItemCardapio = nomeItemCardapio;
         this.pesoItem = pesoItem;
         this.precoItem = precoItem;
@@ -15,5 +15,18 @@ public class Sobremesa extends ItemCardapio{
         this.saborCalda = saborCalda;
         this.temJujuba = temJujuba;
         this.temNutella = temNutella;
+    }
+
+    // MUDANÇA: Exibe o nome da sobremesa, sabor, calda e adicionais no resumo.
+    @Override
+    public String getNomeItemCardapio() {
+        String descricao = super.getNomeItemCardapio() + " de " + sabor + " (calda: " + saborCalda;
+        if (temJujuba) {
+            descricao += ", c/ jujuba";
+        }
+        if (temNutella) {
+            descricao += ", c/ Nutella";
+        }
+        return descricao + ")";
     }
 }
