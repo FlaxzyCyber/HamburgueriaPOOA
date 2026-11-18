@@ -1,13 +1,13 @@
 package fabrica;
 
-import construtor.BuilderLanche;
+import construtor.BuilderHamburguer;
 import modelo.ItemCardapio;
-import modelo.Lanche;
+import modelo.Hamburguer;
 
-public class FabricaDeLanche extends FabricaItemCardapio<BuilderLanche> {
+public class FabricaDeLanche extends FabricaItemCardapio<BuilderHamburguer> {
 
     @Override
-    protected ItemCardapio instanciarItem(String nomeItemCardapio, BuilderLanche builderLanche) {
+    protected ItemCardapio instanciarItem(String nomeItemCardapio, BuilderHamburguer builderHamburguer) {
         double precoBase = switch (nomeItemCardapio) {
             case "X-Burger" -> 22.0;
             case "X-Salada" -> 25.0;
@@ -22,12 +22,12 @@ public class FabricaDeLanche extends FabricaItemCardapio<BuilderLanche> {
             default -> 280.0;
         };
 
-        int extrasCarne = builderLanche.getQuantidade_hamburgueres() - 1;
+        int extrasCarne = builderHamburguer.getQuantidade_hamburgueres() - 1;
         double precoFinal = precoBase + (extrasCarne * 8.0);
         double pesoFinal = pesoBase + (extrasCarne * 120.0);
 
-        return new Lanche(nomeItemCardapio, pesoFinal, precoFinal,
-                builderLanche.getTipoPao(), builderLanche.getQuantidade_hamburgueres(),
-                builderLanche.isTemCebola(), builderLanche.isCondimentos(), builderLanche.isKetchup());
+        return new Hamburguer(nomeItemCardapio, pesoFinal, precoFinal,
+                builderHamburguer.getTipoPao(), builderHamburguer.getQuantidade_hamburgueres(),
+                builderHamburguer.isTemCebola(), builderHamburguer.isCondimentos(), builderHamburguer.isKetchup());
     }
 }
