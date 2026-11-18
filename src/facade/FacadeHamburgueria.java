@@ -21,8 +21,6 @@ import java.util.List;
 
 public class FacadeHamburgueria {
 
-    // MUDANÇA: Removidas as constantes fixas de nome, peso e preço dos itens.
-    // Agora cada Fábrica conhece as regras de criação e precificação do seu produto.
     private static final double VALOR_ENTREGA = 5.0;
 
     private final FabricaDeLanche fabricaLanche = new FabricaDeLanche();
@@ -34,10 +32,10 @@ public class FacadeHamburgueria {
     private Pedido pedido;
     private boolean pago;
 
-    // MUDANÇA: Recebe o nome do lanche escolhido no menu e repassa para a FabricaDeLanche.
-    public void adicionarLanche(String nomeLanche, BuilderHamburguer opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
+    public void adicionarHamburger(String nomeLanche, BuilderHamburguer opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
         exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
+        iniciarNovoPedidoSeAnteriorPago(); // MUDANÇA: descarta o pedido anterior já pago ao iniciar um novo
 
         ItemCardapio lanche = fabricaLanche.criarItem(nomeLanche, opcoes);
         lanche.setQuantidade(quantidade);
@@ -50,19 +48,21 @@ public class FacadeHamburgueria {
         itensEmMontagem.add(lanche);
     }
 
-    // MUDANÇA: Recebe o nome da bebida escolhida no menu e repassa para a FabricaDeBebida.
     public void adicionarBebida(String nomeBebida, BuilderBebida opcoes, int quantidade) {
         exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
+        iniciarNovoPedidoSeAnteriorPago(); // MUDANÇA: descarta o pedido anterior já pago ao iniciar um novo
+
         ItemCardapio bebida = fabricaBebida.criarItem(nomeBebida, opcoes);
         bebida.setQuantidade(quantidade);
         itensEmMontagem.add(bebida);
     }
 
-    // MUDANÇA: Recebe o nome da sobremesa escolhida no menu e repassa para a FabricaDeSobremesa.
     public void adicionarSobremesa(String nomeSobremesa, BuilderSobremesa opcoes, int quantidade) {
         exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
+        iniciarNovoPedidoSeAnteriorPago(); // MUDANÇA: descarta o pedido anterior já pago ao iniciar um novo
+
         ItemCardapio sobremesa = fabricaSobremesa.criarItem(nomeSobremesa, opcoes);
         sobremesa.setQuantidade(quantidade);
         itensEmMontagem.add(sobremesa);
@@ -70,6 +70,7 @@ public class FacadeHamburgueria {
 
     public void fazerPedido(String endereco, String observacoes) {
         exigirPedidoAnteriorPago();
+
         BuilderPedido builder = new BuilderPedido()
                 .adicionarEndereco(endereco)
                 .adicionarObservacoes(observacoes)
@@ -88,19 +89,47 @@ public class FacadeHamburgueria {
         pago = false;
     }
 
+    // MUDANÇA: Agora valida antes de retornar o valor se há itens não finalizados
+    // ou se o pedido atual já foi pago, evitando mostrar o valor de um pedido antigo.
     public double getValorTotalPedido() {
-        exigirPedido();
+        exigirPedidoDisponivelParaPagamento();
         return pedido.valorTotalPedido();
     }
 
     public void pagar(Pagamento pagamento) {
-        exigirPedido();
-        if (pago) {
-            throw new IllegalStateException("Este pedido já foi pago.");
-        }
+        exigirPedidoDisponivelParaPagamento();
         pagamento.realizarPagamento(pedido.valorTotalPedido());
         pago = true;
         processarPedido();
+    }
+
+    public void exigirPedidoAnteriorPago() {
+        if (pedido != null && !pago) {
+            throw new IllegalStateException("Pague o pedido atual antes de iniciar outro.");
+        }
+    }
+
+    // MUDANÇA: Mantém o pedido pago visível para consulta no resumo logo após pagar,
+    // mas limpa os dados antigos assim que o primeiro item de um novo pedido é adicionado.
+    private void iniciarNovoPedidoSeAnteriorPago() {
+        if (pago) {
+            pedido = null;
+            itensDoPedido.clear();
+            pago = false;
+        }
+    }
+
+    // MUDANÇA: Centraliza as regras de bloqueio antes de exibir valor ou processar pagamento.
+    private void exigirPedidoDisponivelParaPagamento() {
+        if (!itensEmMontagem.isEmpty()) {
+            throw new IllegalStateException("Finalize o pedido na opção 4 antes de pagar.");
+        }
+        if (pedido == null) {
+            throw new IllegalStateException("Nenhum pedido foi finalizado ainda.");
+        }
+        if (pago) {
+            throw new IllegalStateException("Este pedido já foi pago.");
+        }
     }
 
     private void processarPedido() {
@@ -151,18 +180,6 @@ public class FacadeHamburgueria {
     private void exigirQuantidade(int quantidade) {
         if (quantidade < 1) {
             throw new IllegalArgumentException("A quantidade deve ser pelo menos 1.");
-        }
-    }
-
-    private void exigirPedido() {
-        if (pedido == null) {
-            throw new IllegalStateException("Nenhum pedido foi finalizado ainda.");
-        }
-    }
-    // Adicione este método privado na FacadeHamburgueria:
-    public void exigirPedidoAnteriorPago() {
-        if (pedido != null && !pago) {
-            throw new IllegalStateException("Pague o pedido atual antes de iniciar outro.");
         }
     }
 }
