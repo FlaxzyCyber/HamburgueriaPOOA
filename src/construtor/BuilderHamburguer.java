@@ -1,29 +1,29 @@
 package construtor;
 
-public class BuilderLanche {
+public class BuilderHamburguer {
     String tipoPao = "Pão italiano";
     int quantidade_hamburgueres = 1;
     boolean temCebola = true;
     boolean condimentos = true;
     boolean ketchup = true;
 
-    public BuilderLanche tipoPao(String tipoPao){
+    public BuilderHamburguer tipoPao(String tipoPao){
         this.tipoPao = tipoPao;
         return this;
     }
-    public BuilderLanche quantidadeHamburguer(int quantidade){
+    public BuilderHamburguer quantidadeHamburguer(int quantidade){
         this.quantidade_hamburgueres = quantidade;
         return this;
     }
-    public BuilderLanche temCebola(boolean confirmacao){
+    public BuilderHamburguer temCebola(boolean confirmacao){
         this.temCebola = confirmacao;
         return this;
     }
-    public BuilderLanche temCodimentos(boolean confirmacao){
+    public BuilderHamburguer temCodimentos(boolean confirmacao){
         this.condimentos = confirmacao;
         return this;
     }
-    public BuilderLanche temKetchup(boolean confirmacao){
+    public BuilderHamburguer temKetchup(boolean confirmacao){
         this.ketchup = confirmacao ;
         return this;
     }

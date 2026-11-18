@@ -1,7 +1,7 @@
 package facade;
 
 import construtor.BuilderBebida;
-import construtor.BuilderLanche;
+import construtor.BuilderHamburguer;
 import construtor.BuilderPedido;
 import construtor.BuilderSobremesa;
 import decorador.ExtraBacon;
@@ -35,7 +35,7 @@ public class FacadeHamburgueria {
     private boolean pago;
 
     // MUDANÇA: Recebe o nome do lanche escolhido no menu e repassa para a FabricaDeLanche.
-    public void adicionarLanche(String nomeLanche, BuilderLanche opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
+    public void adicionarLanche(String nomeLanche, BuilderHamburguer opcoes, int quantidade, boolean comQueijo, boolean comBacon) {
         exigirPedidoAnteriorPago();
         exigirQuantidade(quantidade);
 

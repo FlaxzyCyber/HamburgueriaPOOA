@@ -1,5 +1,5 @@
 import construtor.BuilderBebida;
-import construtor.BuilderLanche;
+import construtor.BuilderHamburguer;
 import construtor.BuilderSobremesa;
 import facade.FacadeHamburgueria;
 import pagamento.Pagamento;
@@ -28,7 +28,7 @@ public class Main {
 
     private static void mostrarMenu() {
         System.out.println("\n=== Hamburgueria ===");
-        System.out.println("1 - Adicionar lanche");
+        System.out.println("1 - Adicionar hambúrguer");
         System.out.println("2 - Adicionar bebida");
         System.out.println("3 - Adicionar sobremesa");
         System.out.println("4 - Finalizar pedido");
@@ -68,7 +68,7 @@ public class Main {
                 "X-Burger", "X-Salada", "X-Tudo"
         });
 
-        BuilderLanche opcoes = new BuilderLanche();
+        BuilderHamburguer opcoes = new BuilderHamburguer();
 
         String pao = escolherTexto("Tipo de pão:", new String[]{
                 "Pão italiano", "Pão brioche", "Pão australiano", "Pão com gergelim"
