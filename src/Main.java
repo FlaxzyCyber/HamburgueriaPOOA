@@ -88,7 +88,7 @@ public class Main {
         boolean bacon = lerSimNao("Extra de bacon? (s/n): ");
         int quantidade = lerInteiroPositivo("Quantos lanches iguais a esse? ");
 
-        facade.adicionarLanche(nomeLanche, opcoes, quantidade, queijo, bacon);
+        facade.adicionarHamburger(nomeLanche, opcoes, quantidade, queijo, bacon);
         System.out.println(nomeLanche + " adicionado!");
     }
 
